@@ -24,10 +24,11 @@ clang++ -std=c++17 main.cc -o main
 1. What error do you get when you run the program?
 
 ## Dynamic Memory Allocation to the rescue!
-Although your program runs on the stack with limited space, there is another part of your computer's memory that can be shared by any program -- the heap. To access the heap, we need to first reserve or allocate space in the heap. We do that by using the `new` keyword. We then create a pointer variable to store the location of that space. Modify the `LoadImage` function to dynamically allocate an Image object in the heap. See the code below.
+Although your program runs on the stack with limited space, there is another part of your computer's memory that can be shared by any program -- the heap. To access the heap, we need to first reserve or allocate space in the heap. We do that by using the `new` keyword. We then create a pointer variable to store the location of that space. Modify the `LoadImage` function to dynamically allocate an Image object in the heap. Also make sure to use the arrow notation to use a pointer to access the member function of the obect in the heap. See the code below.
 
 ```
 Image* my_image_ptr = new Image{filename};
+my_image_ptr->Display();
 ```
 
 Recompile the program and try running it again.
