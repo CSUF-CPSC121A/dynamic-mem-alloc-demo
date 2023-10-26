@@ -11,7 +11,7 @@ Let's see this in action. Open `image.h` and go over the `Image` class. If you h
 
 > Arrays are used to store a collection of information much like `std::vector`. The difference is that arrays are primitive data types so they do not offer any member functions. They do not grow either so you cannot add any more data to an array after you define its size.
 
-Go over `main.cc`. Take note that it creates an `Image` object in the stack. Try compiling and running the program. Provide any filename and hit <kbd>enter</kbd>.
+Go over `main.cc`. Take note that the `LoadImage` function creates an `Image` object in the stack. Try compiling and running the program. Provide any filename and hit <kbd>enter</kbd>.
 
 ```
 clang++ -std=c++17 main.cc -o main
@@ -38,10 +38,10 @@ Recompile the program and try running it again.
 1. How do you think using pointers solve the error?
 
 ## Memory leaks
-Everything in the world is good again. No more Segmentation faults. But wait, remember that we allocated or reserved space in the heap? Much like checking in a hotel or reserving a locker, what do you do when you are done using the space? If we don't check out of our room or give back our locker keys no one can use that space. In the same way, if we dynamically allocate space (using `new`) we also need to deallocate the space. Otherwise the space in the heap cannot be used by other programs, also called a `memory leak`. Take note that we access the space using a pointer, so the moment the `LoadImage` function exits we no longer have access to `my_image_ptr`. We can't even use the space despite being the one who allocated the space.
+Everything in the world is good again. No more Segmentation faults. But wait, remember that we allocated or reserved space in the heap? Much like checking in a hotel or reserving a locker, what do you do when you are done using the space? If we don't check out of our room or give back our locker keys no one can use that space. In the same way, if we dynamically allocate space (using `new`) we also need to deallocate the space. Otherwise the space in the heap cannot be used by other programs, also called a `memory leak`. In our example, we access the space in the heap using a pointer variable, so the moment the `LoadImage` function exits we no longer have access to `my_image_ptr`. We can't even use the space despite being the one who allocated the space.
 
 ### Detecting memory leaks
-Unfortunately, many times memory leaks are not detected early enough so a long-running program might be slowly using up the heap until it has no more memory to reserve or it crashes. This is not something you want to happen especially if your program is mission critical (e.g., air traffic control program).
+Unfortunately, memory leaks are not detected early enough so a long-running program might be slowly using up the heap until it has no more memory to reserve or it crashes. This is not something you want to happen especially if your program is mission critical (e.g., air traffic control program).
 
 The `clang++` compiler provides an `AddressSanitizer` that can help us detect memory leaks. We can access this by using the `-fsantize=address` flag during compilation. Recompile your code using the command below and run it.
 
@@ -69,9 +69,9 @@ Recompile and rerun your program.
 ## Shared pointers
 Everything in the world is yet good again. However, we remember that we are human. If it is a few lines of code, you can probably remember dynamically allocating and deallocating space in the heap. It is an entirely different story if you are instead dealing with a large code base (see this [Google Chrome source code](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/tabs/tab.cc) as an example) and you write code that dynamically allocates space in one part of the code and deallocate somewhere else.
 
-Shared pointers, which is a subset of a larger group of data structures called `Smart Pointers`, helps address this problem. They are smart, because you can rely on them to clean up after themselves. Unlike raw pointers, which is a term we use to refer to pointers that we manually allocate and deallocate  with `new` and `delete`, shared pointers allocate memory for us. When a shared pointer is `destroyed``, it automatically deallocates the memory for us as well. That way as a developer, we only need to declare the shared pointer and not worry so much about memory leaks.
+Shared pointers, which is a subset of a larger group of data structures called `Smart Pointers`, helps address this problem. They are smart, because you can rely on them to clean up after themselves. Unlike raw pointers, which is a term we use to refer to pointers that we manually allocate and deallocate  with `new` and `delete`, shared pointers allocate memory for us. When a shared pointer is `destroyed`, it automatically deallocates the memory for us as well. That way as a developer, we only need to declare the shared pointer and not worry so much about memory leaks.
 
-Shared pointers, much like other variables, are destroyed automatically when their containing function exits. In our example, the `my_image_ptr` variable is destroyed when the `LoadImage` function exits. Modify `LoadImage` to use a shared pointer as shown below. Make sure to include the `memory` library to use `std::shared_pointer` (`#include <memory>`). Take note that we do not need the `delete` keyword.
+Shared pointers, much like other variables, are destroyed automatically when their containing function exits. In our example, the `my_image_ptr` variable is destroyed when the `LoadImage` function exits. Modify `LoadImage` to use a shared pointer as shown below. Make sure to include the `memory` library to use `std::shared_pointer` (`#include <memory>`). Take note that we do not need the `delete` keyword, so remove it.
 
 ```
 std::shared_ptr<Image> my_image_ptr = std::make_shared<Image>(filename);
@@ -81,4 +81,4 @@ Try recompiling and running the program.
 
 ### Pop quiz!
 1. Recall you did not delete your pointer. Does the program report a memory leak?
-1. Explain how std::shared_ptr avoids memory leaks in this situation.
+1. Explain how `std::shared_ptr` avoids memory leaks in this situation.
